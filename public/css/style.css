@@ -1,0 +1,169 @@
+@charset "utf-8";
+
+body {
+  color: #333;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","游ゴシック Medium",YuGothic,YuGothicM,"Hiragino Kaku Gothic ProN",メイリオ,Meiryo,sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.Header {
+  background-color: #eee;
+  border-bottom: 2px solid #333;
+  padding: 20px;
+}
+
+.Header h1 {
+  text-align: center;
+}
+
+.Contents {
+  padding: 20px;
+  min-height: 50vh;
+}
+
+.Gallery__search {
+  display: flex;
+  justify-content: center;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.Gallery__search__text {
+  border:0;
+  padding:10px;
+  font-size:1.3em;
+  border:solid 1px #ccc;
+  margin-right: 20px;
+  max-width: 70%;
+  border-radius: 5px;
+}
+
+.Gallery__search__submit {
+  border:0;
+  padding:10px;
+  font-size:1.3em;
+  border:solid 1px #ccc;
+  max-width:100px;
+  border-radius: 5px;
+  transition: .4s;
+}
+
+.Gallery__search__submit:hover {
+  opacity: .7;
+}
+
+.Gallery__contents {
+  max-width: 750px;
+  margin: 15px auto 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.Gallery__contents img {
+  transition: .2s;
+}
+
+.Gallery__block {
+  display: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.Gallery__block img {
+  margin: 5px;
+}
+
+.Pager {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+}
+
+.Pager__list {
+  border: 1px solid #333;
+  border-right: none;
+}
+
+.Pager__list:last-child {
+  border-right: 1px solid #333;
+}
+
+.Pager__anchor {
+  color: #333;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.Pager__anchor.is-active {
+  background-color: #333;
+  color: #fff;
+}
+
+.Detail__contents {
+  text-align: center;
+}
+
+.Detail__title {
+  margin-bottom: 20px;
+}
+
+.Detail__image {
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+.Detail__btn {
+  border: 0;
+  margin: 0 auto;
+  font-size: 1.3em;
+  border: solid 1px #ccc;
+  max-width: 100px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.Detail__btn a {
+  color: #333;
+  display: block;
+  padding: 10px;
+  transition: .4s;
+}
+
+.Detail__btn a:hover {
+  opacity: .7;
+}
+
+.is-hide {
+  display: none;
+}
+
+.is-show {
+  display: block;
+}
+
+/* loading */
+/* .loading {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0,0,0,.5);
+  background-image: url(../img/loading.gif);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center;
+  background-size: 32px 32px;
+} */
