@@ -1,16 +1,16 @@
 import Utils from "../util/Utils.js"
 
 const Cookie = {
-  initCookie: function() {
+  initCookie: async function() {
     if (!document.cookie) {return}
     Utils.data.keywords = []
     const cookieData = document.cookie.split(";");
-    cookieData.forEach(function(data){
+    await cookieData.forEach(function(data){
       Utils.data.keywords.push(data.replace(/\s+text\d+=|text\d+=/, ""))
     })
   },
-  saveCookie: function() {
-    Utils.data.keywords.forEach(function(keyword, idx){
+  saveCookie: async function() {
+    await Utils.data.keywords.forEach(function(keyword, idx){
       document.cookie = `text${idx}=${keyword};max-age=60`
     })
   },

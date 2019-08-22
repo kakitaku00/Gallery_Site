@@ -3,6 +3,8 @@ import Pager from "../components/Pager.js"
 import Suggest from "../components/Suggest.js"
 import Cookie from "../components/Cookie.js"
 
+import router from "../router.js"
+
 const $Contents = $(".Contents")[0]
 
 let Gallery = {
@@ -26,44 +28,53 @@ let Gallery = {
         $("#SearchText").val(Utils.data.val)
         $("#SearchBtn").click(this.handleSearch.bind(this))
         if (Utils.data.val) {
-          await this.resetGallery()
           await this.renderImage()
         }
       },
-      bindCookieData: function() {
-        Cookie.initCookie()
-        this.renderSuggest()
+      bindCookieData: async function() {
+        await Cookie.initCookie()
+        await this.renderSuggest()
       },
       handleSearch: async function() {
         if (!$("#SearchText").val()) { return }
-        if ($("#SearchText").val() !== Utils.data.val ) {
-          this.setSuggest();
-          Utils.data.page = 1
-        }
+        if (Utils.data.val !== $("#SearchText").val()) { Utils.data.page = 1 }
+        Utils.data.val = $("#SearchText").val()
+        if (!Utils.data.keywords.includes(Utils.data.val)) { await this.setSuggest() }
         await Utils.getImageList(Utils.data.val, Utils.data.page).done((response) => {
           console.log(response)
           Utils.data.images = response.photos.photo
           Utils.data.page = response.photos.page
           Utils.data.maxPages = response.photos.pages
         })
-        this.resetGallery()
-        this.renderImage()
+        await this.resetGallery()
+        await this.renderImage()
       },
       setSuggest: async function() {
-        Utils.data.val = $("#SearchText").val()
         Utils.data.keywords.unshift(Utils.data.val)
-        Cookie.saveCookie()
+        await Cookie.saveCookie()
         await Suggest.after_render()
       },
-      renderImage: function() {
-        $("#Gallery").html(Utils.data.images.map(photo => `<a class="flickerImage" href="/#/image/${photo.id}"><img src="${photo.url_q}" alt="${photo.title}"></a>`).join(''))
-        this.renderPager(Utils.data.page, Utils.data.maxPages)
+      renderImage: async function() {
+        $("#Gallery").html(Utils.data.images.map(photo => `<a class="flickerImage" href="/detail.html?=${photo.id}"><img src="${photo.url_q}" alt="${photo.title}"></a>`).join(''))
+        await this.renderPager(Utils.data.page, Utils.data.maxPages)
+        await this.handleImageClick()
+      },
+      handleImageClick: async function() {
+        $(".flickerImage").each(function() {
+          $(this).on("click", function(e) {
+            e.preventDefault()
+            const url = e.currentTarget.getAttribute("href")
+            window.history.pushState(null, null, url);
+            router()
+          })
+        })
       },
       renderSuggest: async function() {
         $Contents.insertAdjacentHTML('beforeend', await Suggest.render())
         await Suggest.after_render()
       },
       renderPager: async function(page, maxPages) {
+        // $(".Gallery__pager").empty()
         $Contents.insertAdjacentHTML('beforeend', await Pager.render())
         await Pager.after_render()
         // ページャーを表示するブロックの最大数
@@ -105,20 +116,20 @@ let Gallery = {
         }
         this.bindPagerEvent()
       },
-      bindPagerEvent: function() {
+      bindPagerEvent: async function() {
         const self = this;
         $(".Pager__anchor").each(function() {
-          $(this).on("click", (e) => {
+          $(this).on("click", async (e) => {
             e.preventDefault();
             self.resetGallery();
             Utils.data.page = $(this)[0].getAttribute("data-page");
-            self.handleSearch(Utils.data.val, Utils.data.page);
+            await self.handleSearch(Utils.data.val, Utils.data.page);
           })
         })
       },
-      resetGallery: function() {
+      resetGallery: async function() {
         $("#Gallery").empty();
-        $("#Pager").empty();
+        $("#Gallery__pager").remove();
       }
     }
     app.init()

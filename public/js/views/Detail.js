@@ -1,10 +1,12 @@
 import Utils from "../util/Utils.js"
 
+import router from "../router.js"
+
 const Detail = {
   render : async () => {
     let view = `
       <div id="Detail" class="Detail__contents"></div>
-      <div class="Detail__btn"><a href="/#">back</a></div>
+      <div class="Detail__btn"><a href="/" id="topBtn">back</a></div>
     `
     return view
   },
@@ -12,6 +14,7 @@ const Detail = {
     const app = {
       init: async function() {
         await this.bindImage()
+        await this.bindEvent()
       },
       bindImage: async function() {
         await this.getImage()
@@ -36,6 +39,14 @@ const Detail = {
           <img src="http://farm${image.farm}.static.flickr.com/${image.server}/${image.id}_${image.secret}.jpg" class="Detail__image">
         `
         await $("#Detail").html(src)
+      },
+      bindEvent: async function() {
+        document.querySelector("#topBtn").addEventListener("click", function(e) {
+          e.preventDefault()
+          const url = e.currentTarget.getAttribute("href")
+          window.history.pushState(null, null, url);
+          router()
+        })
       }
     }
     app.init()

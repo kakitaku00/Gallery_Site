@@ -1,11 +1,7 @@
-import Utils from "../util/Utils.js"
-import Gallery from "../views/Gallery.js"
-
 let Pager = {
   render : async() => {
-
     let view = `
-      <div class="Gallery__pager">
+      <div id="Gallery__pager" class="Gallery__pager">
         <ul id="Pager" class="Pager">
         </ul>
       </div>

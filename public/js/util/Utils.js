@@ -43,14 +43,12 @@ const Utils = {
     })
   },
   parseRequestUrl: function() {
-    const url = location.hash.slice(1).toLowerCase() || '/';
-    const r = url.split("/")
     const request = {
       resource    : null,
       id          : null
     }
-    request.resource = r[1]
-    request.id = r[2]
+    request.resource = location.pathname
+    request.id = location.search.replace(/\?=/,"")
 
     return request
   }

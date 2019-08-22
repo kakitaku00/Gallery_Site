@@ -9,13 +9,13 @@ const Suggest = {
   },
   after_render : async () => {
     const app = {
-      init: function() {
-        this.bindEvent()
+      init: async function() {
+        await this.bindEvent()
       },
-      bindEvent: function() {
-        this.createOption();
+      bindEvent: async function() {
+        await this.createOption();
       },
-      createOption: function() {
+      createOption: async function() {
         const option = Utils.data.keywords.map((keyword) => {
           return `<option value="${keyword}"></option>`
         })
