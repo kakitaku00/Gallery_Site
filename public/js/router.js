@@ -5,7 +5,7 @@ import Utils from "./util/Utils.js"
 
 const router = async () => {
   const routes = {
-    "/"             : Gallery,
+    "/"               : Gallery,
     "/detail.html"    : Detail
   };
 
