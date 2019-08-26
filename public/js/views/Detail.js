@@ -21,7 +21,7 @@ const Detail = {
         await this.renderImage()
       },
       getImage: async function() {
-        const request = Utils.parseRequestUrl()
+        const request = await Utils.parseRequestUrl()
         await Utils.getImage(request.id).done(async (response) => {
           Utils.data.image = response.photo
         })
@@ -43,9 +43,10 @@ const Detail = {
       bindEvent: async function() {
         document.querySelector("#topBtn").addEventListener("click", function(e) {
           e.preventDefault()
-          const url = e.currentTarget.getAttribute("href")
-          window.history.pushState(null, null, url);
-          router()
+          window.history.back()
+          // const url = e.currentTarget.getAttribute("href")
+          // window.history.pushState(null, null, url)
+          // router()
         })
       }
     }

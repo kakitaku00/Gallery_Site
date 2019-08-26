@@ -1,4 +1,5 @@
 import Key from '../../config/key.js';
+import Detail from '../views/Detail.js';
 
 const Utils = {
   FLICKER_SERVER:"https://api.flickr.com/services/rest",
@@ -45,11 +46,17 @@ const Utils = {
   parseRequestUrl: function() {
     const request = {
       resource    : null,
-      id          : null
+      id          : null,
+      page        : null,
+      val         : null
     }
     request.resource = location.pathname
-    request.id = location.search.replace(/\?=/,"")
-
+    // request.id = location.search.replace(/\?id=/,"")
+    const params = location.search.slice(1).split("&")
+    params.forEach(function(param) {
+      const _param = param.split("=")
+      request[_param[0]] = _param[1]
+    })
     return request
   }
 }

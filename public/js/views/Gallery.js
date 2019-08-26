@@ -5,7 +5,7 @@ import Cookie from "../components/Cookie.js"
 
 import router from "../router.js"
 
-const $Contents = $(".Contents")[0]
+const $Contents = $("#Contents")[0]
 
 let Gallery = {
   render : async () => {
@@ -20,9 +20,22 @@ let Gallery = {
   },
   after_render : async () => {
     const app = {
-      init: function() {
-        this.bindEvent()
-        this.bindCookieData()
+      init: async function() {
+        await this.initGallery()
+        await this.bindEvent()
+        await this.bindCookieData()
+      },
+      initGallery: async function() {
+        const request = await Utils.parseRequestUrl()
+        if (request.page || request.text) {
+          Utils.data.page = request.page
+          Utils.data.val = request.val
+          $("#SearchText").val(Utils.data.val)
+          this.handleSearch()
+        } else {
+          Utils.data.val = ""
+          $("#Gallery").empty()
+        }
       },
       bindEvent: async function() {
         $("#SearchText").val(Utils.data.val)
@@ -36,9 +49,14 @@ let Gallery = {
         await this.renderSuggest()
       },
       handleSearch: async function() {
+        const request = await Utils.parseRequestUrl()
         if (!$("#SearchText").val()) { return }
         if (Utils.data.val !== $("#SearchText").val()) { Utils.data.page = 1 }
         Utils.data.val = $("#SearchText").val()
+        if (!request.val) {
+          const url = `?page=${Utils.data.page}&val=${Utils.data.val}`
+          await window.history.pushState(null, null, url)
+        }
         if (!Utils.data.keywords.includes(Utils.data.val)) { await this.setSuggest() }
         await Utils.getImageList(Utils.data.val, Utils.data.page).done((response) => {
           console.log(response)
@@ -55,7 +73,7 @@ let Gallery = {
         await Suggest.after_render()
       },
       renderImage: async function() {
-        $("#Gallery").html(Utils.data.images.map(photo => `<a class="flickerImage" href="/detail.html?=${photo.id}"><img src="${photo.url_q}" alt="${photo.title}"></a>`).join(''))
+        $("#Gallery").html(Utils.data.images.map(photo => `<a class="flickerImage" href="/detail.html?id=${photo.id}"><img src="${photo.url_q}" alt="${photo.title}"></a>`).join(''))
         await this.renderPager(Utils.data.page, Utils.data.maxPages)
         await this.handleImageClick()
       },
@@ -74,7 +92,6 @@ let Gallery = {
         await Suggest.after_render()
       },
       renderPager: async function(page, maxPages) {
-        // $(".Gallery__pager").empty()
         $Contents.insertAdjacentHTML('beforeend', await Pager.render())
         await Pager.after_render()
         // ページャーを表示するブロックの最大数
@@ -99,32 +116,31 @@ let Gallery = {
         }
         // 最初に戻るボタン
         for (let i = page + adjustNum; i <= currentMaxViewPager; i++) {
-          $("#Pager").append('<li class="Pager__list"><a href="#' + i + '" data-page="' + i + '" class="Pager__anchor">' + i + '</a></li>')
+          $("#Pager").append('<li class="Pager__list"><a href="?page=' + i + '&val=' + Utils.data.val + '" data-page="' + i + '" class="Pager__anchor">' + i + '</a></li>')
           if (i === page) {
             $('a[data-page="' + page + '"').addClass("is-active");
           }
         }
         if (page !== 1) {
           const prevPageNum = page - 1
-          $("#Pager").prepend('<li class="Pager__list"><a href="#' + prevPageNum + '" data-page="' + prevPageNum + '" class="Pager__anchor"><</a></li>')
-          $("#Pager").prepend('<li class="Pager__list"><a href="#' + 1 + '" data-page="' + 1 + '" class="Pager__anchor"><<</a></li>')
+          $("#Pager").prepend('<li class="Pager__list"><a href="?page=' + prevPageNum + '&val=' + Utils.data.val + '" data-page="' + prevPageNum + '" class="Pager__anchor"><</a></li>')
+          $("#Pager").prepend('<li class="Pager__list"><a href="?page=' + 1 + '&val=' + Utils.data.val + '" data-page="' + 1 + '" class="Pager__anchor"><<</a></li>')
         }
         if (page !== maxPages) {
           const nextPageNum = page + 1
-          $("#Pager").append('<li class="Pager__list"><a href="#' + nextPageNum + '" data-page="' + nextPageNum + '" class="Pager__anchor">></a></li>')
-          $("#Pager").append('<li class="Pager__list"><a href="#' + maxPages + '" data-page="' + maxPages + '" class="Pager__anchor">>></a></li>')
+          $("#Pager").append('<li class="Pager__list"><a href="?page=' + nextPageNum + '&val=' + Utils.data.val + '" data-page="' + nextPageNum + '" class="Pager__anchor">></a></li>')
+          $("#Pager").append('<li class="Pager__list"><a href="?page=' + maxPages + '&val=' + Utils.data.val + '" data-page="' + maxPages + '" class="Pager__anchor">>></a></li>')
         }
         this.bindPagerEvent()
       },
       bindPagerEvent: async function() {
-        const self = this;
-        $(".Pager__anchor").each(function() {
-          $(this).on("click", async (e) => {
-            e.preventDefault();
-            self.resetGallery();
-            Utils.data.page = $(this)[0].getAttribute("data-page");
-            await self.handleSearch(Utils.data.val, Utils.data.page);
-          })
+        $(".Pager__anchor").on("click", async (e) => {
+          e.preventDefault();
+          this.resetGallery();
+          Utils.data.page = e.currentTarget.getAttribute("data-page");
+          const url = `?page=${Utils.data.page}&val=${Utils.data.val}`
+          await window.history.pushState(null, null, url)
+          await this.initGallery()
         })
       },
       resetGallery: async function() {
